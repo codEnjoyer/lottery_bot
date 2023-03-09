@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "lottery-bot"
+version = "0.1.0"
+description = ""
+authors = ["codEnjoyer <ch4shkin.nikita@gmail.com>"]
+readme = "README.md"
+packages = [{include = "lottery_bot"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+python-telegram-bot = "^20.1"
+peewee = "^3.16.0"
+logging = "^0.4.9.6"
+environs = "^9.5.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
