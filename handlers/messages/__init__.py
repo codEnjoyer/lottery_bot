@@ -1,12 +1,13 @@
 from typing import List
 
-from telegram.ext import MessageHandler, filters
+from telegram.ext import MessageHandler
 
-from .echo import unknown_command, echo
+from .basic import get_basic_messages_handlers
+from .echo import get_echo_messages_handlers
 
 
 def get_messages_handlers() -> List[MessageHandler]:
     return [
-        MessageHandler(filters.COMMAND, unknown_command),  # must be after command_handlers
-        MessageHandler(filters.TEXT & (~filters.COMMAND), echo),
+        *get_basic_messages_handlers(),
+        *get_echo_messages_handlers(),  # must be after command_handlers
     ]

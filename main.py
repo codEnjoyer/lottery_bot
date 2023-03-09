@@ -1,7 +1,6 @@
 # region VersionCheck
 from telegram import __version__ as tg_version
 
-
 try:
     from telegram import __version_info__
 except ImportError:
@@ -20,20 +19,20 @@ from config import load_config
 import logging
 from telegram.ext import ApplicationBuilder
 
-from handlers import *
+from handlers import get_commands_handlers, get_conversations_handlers, get_messages_handlers
 
 logging.basicConfig(
     format=u'%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s',
     level=logging.INFO
 )
 logger = logging.getLogger(__name__)
+config = load_config(".env")
 
 
 def main():
-    config = load_config(".env")
     application = ApplicationBuilder().token(config.tg_bot.token).build()
     handlers = [
-        *get_basic_commands_handlers(),
+        *get_commands_handlers(),
         *get_conversations_handlers(),
         *get_messages_handlers(),
     ]
