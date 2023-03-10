@@ -1,6 +1,7 @@
-import peewee
 from telegram import Update, ReplyKeyboardMarkup
 from telegram.ext import ContextTypes
+
+from functions.admin.database import get_all_lots
 
 import logging
 
@@ -27,3 +28,9 @@ async def go_admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
                       ["Объявить розыгрыш"]]
     reply_markup = ReplyKeyboardMarkup(reply_keyboard)
     await update.message.reply_text("""Hello, world!""", reply_markup=reply_markup)
+
+
+async def remove_lot(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    lots = get_all_lots()
+    await update.message.reply_text(f"""Какой из этих вы хотите удалить?\n
+    {[lot for lot in lots]}""")
