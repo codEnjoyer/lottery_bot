@@ -14,11 +14,11 @@ if __version_info__ < (20, 0, 0, "alpha", 1):
     )
 # endregion
 
-from config import load_config
 
 import logging
 from telegram.ext import ApplicationBuilder
 
+from config import load_config
 from handlers import get_commands_handlers, get_conversations_handlers, get_messages_handlers
 
 logging.basicConfig(

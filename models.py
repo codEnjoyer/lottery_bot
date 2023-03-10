@@ -31,6 +31,7 @@ class Lot(BaseModel):
     numbers_count = IntegerField()
     number_value = FloatField()
     draw_time = DateTimeField(default=datetime.datetime.now)
+    published_at = DateTimeField(default=datetime.datetime.now)
 
 
 class Product(BaseModel):
