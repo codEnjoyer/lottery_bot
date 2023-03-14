@@ -1,4 +1,6 @@
-import datetime
+import datetime as dt
+# from pytz import timezone
+from zoneinfo import ZoneInfo
 import logging
 
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
@@ -72,7 +74,7 @@ async def number_value(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
     context.user_data["number_value"] = float(input_number_value)
     await update.message.reply_text(
         """Введите время розыгрыша лота в формате ISO 8601\n"""
-        """Например, 2011-11-26 23:59:59""",
+        """Например, 2023-01-01 00:00:00 (год-месяц-дата часы:минуты:секунды)""",
         reply_markup=cancel_markup
     )
 
@@ -81,9 +83,12 @@ async def number_value(update: Update, context: ContextTypes.DEFAULT_TYPE) -> in
 
 async def draw_time(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Skips the photo and asks for a location."""
-    input_date = update.message.text  # TODO: Разобраться с timezone'ами
+    input_date = update.message.text
     try:
-        date = datetime.datetime.fromisoformat(input_date)
+        date = dt.datetime.fromisoformat(input_date)
+        if date.tzinfo is None:
+            date = date.replace(tzinfo=ZoneInfo("Asia/Yekaterinburg"))
+
     except ValueError:
         await update.message.reply_text("Некорректно введённая дата. Повторите ввод")
         return GET_DRAW_TIME
@@ -99,14 +104,18 @@ async def draw_time(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 
 async def final_check(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
-    published_at = update.message.date
+    published_at = update.message.date.astimezone(ZoneInfo("Asia/Yekaterinburg"))
     name, description = context.user_data["name"], context.user_data["description"]
     numbers_count, number_value = context.user_data["numbers_count"], context.user_data["number_value"]
     draw_time = context.user_data["draw_time"]
     database.add_lot(name, description, numbers_count, number_value, published_at, draw_time)
+    reply_keyboard = [["Добавить лот"],
+                      ["Удалить лот"],
+                      ["Объявить розыгрыш"]]
+    reply_markup = ReplyKeyboardMarkup(reply_keyboard)
     await update.message.reply_text(
         """Потрясающе, лот добавлен в базу данных!""",
-        reply_markup=ReplyKeyboardRemove()
+        reply_markup=reply_markup
     )
     return ConversationHandler.END
 

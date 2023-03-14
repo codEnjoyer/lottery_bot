@@ -1,6 +1,6 @@
 from typing import List
 
-from peewee import IntegrityError
+from peewee import IntegrityError, ModelDictCursorWrapper
 
 from models import Lot
 import datetime as dt
@@ -20,6 +20,5 @@ def add_lot(name: str, description: str, numbers_count: int, number_value: float
         logger.info(f"""Не удалось добавить {name} в базу данных""")
 
 
-def get_all_lots() -> List[Lot]:
-    # logger.info(f"""{Lot.select()}""")
-    return Lot.select().where(Lot.name == "Телефон").dicts().execute()
+def get_all_lots() -> ModelDictCursorWrapper:
+    return Lot.select().dicts().execute()

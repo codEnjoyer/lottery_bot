@@ -1,4 +1,4 @@
-from telegram import Update, ReplyKeyboardMarkup
+from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 
 from functions.admin.database import get_all_lots
@@ -31,6 +31,13 @@ async def go_admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def remove_lot(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    lots = get_all_lots()
-    await update.message.reply_text(f"""Какой из этих вы хотите удалить?\n
-    {[lot for lot in lots]}""")
+    for lot in get_all_lots():
+        text = f"""Название: {lot["name"]}\n
+        Описание: {lot["description"]}\n
+        Количество номеров: {lot["numbers_count"]}
+        Стоимость одного номера: {lot["number_value"]}\n
+        Дата розыгрыша: {lot["draw_time"]}\n
+        Дата добавления: {lot["published_at"]}"""
+        inline_delete_button = InlineKeyboardButton("Удалить", callback_data=f"{lot['id']}")
+        inline_kb = InlineKeyboardMarkup([[inline_delete_button]])
+        await update.message.reply_text(text, reply_markup=inline_kb)

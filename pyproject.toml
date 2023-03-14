@@ -12,6 +12,7 @@ python-telegram-bot = "^20.1"
 peewee = "^3.16.0"
 logging = "^0.4.9.6"
 environs = "^9.5.0"
+tzdata = "^2022.7"
 
 
 [build-system]
