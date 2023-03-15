@@ -8,7 +8,7 @@ from telegram.ext import ContextTypes, ConversationHandler, CommandHandler, Mess
 
 from functions.admin import database
 
-GET_NAME, GET_DESCRIPTION, GET_NUMBERS_COUNT, GET_NUMBER_VALUE, GET_DRAW_TIME, DO_FINAL_CHECK = range(6)
+GET_NAME, GET_DESCRIPTION, GET_NUMBERS_COUNT, GET_PHOTO, GET_NUMBER_VALUE, GET_DRAW_TIME, DO_FINAL_CHECK = range(7)
 logger = logging.getLogger(__name__)
 cancel_markup = ReplyKeyboardMarkup([["Отмена"]], one_time_keyboard=True, resize_keyboard=True)
 
@@ -40,6 +40,18 @@ async def description(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int
     """Skips the location and asks for info about the user."""
     input_description = update.message.text
     context.user_data["description"] = input_description
+    await update.message.reply_text(
+        """Загрузите изображение для лота""",
+        reply_markup=cancel_markup
+    )
+
+    return GET_PHOTO
+
+
+async def photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
+    """Skips the location and asks for info about the user."""
+    image_id = update.message.photo[0].file_id
+    context.user_data["image_id"] = image_id
     await update.message.reply_text(
         """Введите количество номеров для лота""",
         reply_markup=cancel_markup
@@ -105,18 +117,25 @@ async def draw_time(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 
 async def final_check(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     published_at = update.message.date.astimezone(ZoneInfo("Asia/Yekaterinburg"))
-    name, description = context.user_data["name"], context.user_data["description"]
+    name, description, image_id = context.user_data["name"], context.user_data["description"], context.user_data[
+        "image_id"]
     numbers_count, number_value = context.user_data["numbers_count"], context.user_data["number_value"]
     draw_time = context.user_data["draw_time"]
-    database.add_lot(name, description, numbers_count, number_value, published_at, draw_time)
+    is_ok = database.add_lot(name, description, image_id, numbers_count, number_value, published_at, draw_time)
     reply_keyboard = [["Добавить лот"],
                       ["Удалить лот"],
                       ["Объявить розыгрыш"]]
     reply_markup = ReplyKeyboardMarkup(reply_keyboard)
-    await update.message.reply_text(
-        """Потрясающе, лот добавлен в базу данных!""",
-        reply_markup=reply_markup
-    )
+    if is_ok:
+        await update.message.reply_text(
+            """Потрясающе, лот добавлен в базу данных!""",
+            reply_markup=reply_markup
+        )
+    else:
+        await update.message.reply_text(
+            """К сожалению, лот не был добавлен в базу данных""",
+            reply_markup=reply_markup
+        )
     return ConversationHandler.END
 
 
@@ -140,6 +159,7 @@ def get_add_lot_conversation_handler() -> ConversationHandler:
         states={
             GET_NAME: [MessageHandler(filters.TEXT & ~cancel_filter, name)],
             GET_DESCRIPTION: [MessageHandler(filters.TEXT & ~cancel_filter, description)],
+            GET_PHOTO: [MessageHandler(filters.PHOTO & ~cancel_filter, photo)],
             GET_NUMBERS_COUNT: [MessageHandler(filters.TEXT & ~cancel_filter, numbers_count)],
             GET_NUMBER_VALUE: [MessageHandler(filters.TEXT & ~cancel_filter, number_value)],
             GET_DRAW_TIME: [MessageHandler(filters.TEXT & ~cancel_filter, draw_time)],

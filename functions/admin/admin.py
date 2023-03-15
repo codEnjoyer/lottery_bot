@@ -31,6 +31,9 @@ async def go_admin(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def remove_lot(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if not len(get_all_lots()):
+        await update.message.reply_text("""Список лотов пуст!""")
+        return
     for lot in get_all_lots():
         text = f"""Название: {lot["name"]}\n
         Описание: {lot["description"]}\n
@@ -40,7 +43,7 @@ async def remove_lot(update: Update, context: ContextTypes.DEFAULT_TYPE):
         Дата добавления: {lot["published_at"]}"""
         inline_delete_button = InlineKeyboardButton("Удалить", callback_data=f"Remove_lot {lot['id']}")
         inline_kb = InlineKeyboardMarkup([[inline_delete_button]])
-        await update.message.reply_text(text, reply_markup=inline_kb)
+        await update.message.reply_photo(lot["image_id"], text, reply_markup=inline_kb)
 
 
 async def remove_lot_inline_button(update: Update, context: ContextTypes.DEFAULT_TYPE):

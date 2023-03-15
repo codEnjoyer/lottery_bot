@@ -27,6 +27,7 @@ class Lot(BaseModel):
 
     name = CharField(max_length=128)
     description = TextField(null=True)
+    image_id = TextField()
     numbers_count = IntegerField()
     number_value = FloatField()
     draw_time = DateTimeField(default=datetime.datetime.now)
