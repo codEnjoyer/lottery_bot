@@ -1,7 +1,7 @@
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 
-from functions.admin.database import get_all_lots, delete_lot
+from functions.database import get_all_lots, delete_lot
 
 import logging
 

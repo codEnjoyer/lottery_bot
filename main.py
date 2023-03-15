@@ -19,8 +19,7 @@ import logging
 from telegram.ext import ApplicationBuilder
 
 from config import load_config
-from handlers import get_commands_handlers, get_conversations_handlers, get_messages_handlers, \
-    get_callback_query_handlers
+from handlers import get_commands_handlers, get_messages_handlers, get_callback_query_handlers
 
 logging.basicConfig(
     format=u'%(filename)s:%(lineno)d #%(levelname)-8s [%(asctime)s] - %(name)s - %(message)s',
@@ -35,7 +34,6 @@ def main():
     handlers = [
         *get_commands_handlers(),
         *get_callback_query_handlers(),
-        *get_conversations_handlers(),
         *get_messages_handlers(),
     ]
 

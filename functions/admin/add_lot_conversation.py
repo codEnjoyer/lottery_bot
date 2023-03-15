@@ -6,7 +6,7 @@ import logging
 from telegram import Update, ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import ContextTypes, ConversationHandler, CommandHandler, MessageHandler, filters
 
-from functions.admin import database
+from functions import database
 
 GET_NAME, GET_DESCRIPTION, GET_NUMBERS_COUNT, GET_PHOTO, GET_NUMBER_VALUE, GET_DRAW_TIME, DO_FINAL_CHECK = range(7)
 logger = logging.getLogger(__name__)
