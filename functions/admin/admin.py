@@ -1,7 +1,7 @@
 from telegram import Update, ReplyKeyboardMarkup, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import ContextTypes
 
-from functions.admin.database import get_all_lots
+from functions.admin.database import get_all_lots, delete_lot
 
 import logging
 
@@ -38,6 +38,19 @@ async def remove_lot(update: Update, context: ContextTypes.DEFAULT_TYPE):
         Стоимость одного номера: {lot["number_value"]}\n
         Дата розыгрыша: {lot["draw_time"]}\n
         Дата добавления: {lot["published_at"]}"""
-        inline_delete_button = InlineKeyboardButton("Удалить", callback_data=f"{lot['id']}")
+        inline_delete_button = InlineKeyboardButton("Удалить", callback_data=f"Remove_lot {lot['id']}")
         inline_kb = InlineKeyboardMarkup([[inline_delete_button]])
         await update.message.reply_text(text, reply_markup=inline_kb)
+
+
+async def remove_lot_inline_button(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    try:
+        lot_id = int(query.data.split()[1])
+        logger.info(f"Лот с {lot_id=} подготавливается к удалению")
+    except ValueError:
+        await update.message.reply_text("""Не удалось удалить лот""")
+        return
+    delete_lot(lot_id)
+    logger.info(f"Лот с {lot_id=} был удалён")
+    await query.answer("""Лот был успешно удалён""")

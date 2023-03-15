@@ -1,5 +1,3 @@
-from typing import List
-
 from peewee import IntegrityError, ModelDictCursorWrapper
 
 from models import Lot
@@ -22,3 +20,12 @@ def add_lot(name: str, description: str, numbers_count: int, number_value: float
 
 def get_all_lots() -> ModelDictCursorWrapper:
     return Lot.select().dicts().execute()
+
+
+def delete_lot(id: int) -> bool:
+    try:
+        Lot[id].delete_instance()
+        return True
+    except Exception as e:
+        logger.error(e)
+        return False

@@ -33,7 +33,6 @@ class Lot(BaseModel):
     published_at = DateTimeField(default=datetime.datetime.now)
 
 
-
 class Product(BaseModel):
     class Meta:
         db_table = "Products"

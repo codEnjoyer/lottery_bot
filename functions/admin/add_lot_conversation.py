@@ -131,7 +131,7 @@ async def cancel(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     return ConversationHandler.END
 
 
-def get_add_lot_handler() -> ConversationHandler:
+def get_add_lot_conversation_handler() -> ConversationHandler:
     message_cancel_filter = filters.Regex("^[Оо]тмена$")
     cancel_filter = message_cancel_filter | filters.COMMAND
     return ConversationHandler(
